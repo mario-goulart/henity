@@ -1,0 +1,5 @@
+;; -*- scheme -*-
+((synopsis "Bindings for the Zenity tool")
+ (author "Mario Domenech Goulart")
+ (category ui)
+ (license "BSD"))
