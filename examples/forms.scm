@@ -1,4 +1,7 @@
-(use henity)
+(cond-expand
+ (chicken-4 (use henity))
+ (chicken-5 (import henity))
+ (else (error "Unsupported CHICKEN version.")))
 
 (let ((friend (forms-dialog `((title "Add Friend")
                               (text "Enter information about your friend.")

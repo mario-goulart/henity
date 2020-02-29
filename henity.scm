@@ -19,8 +19,25 @@
  henity-debug
 )
 
-(import chicken scheme)
-(use data-structures extras files ports posix srfi-1 utils)
+(import scheme)
+(cond-expand
+ (chicken-4
+  (import chicken)
+  (use data-structures extras files ports posix srfi-1 utils)
+  (define file-executable? file-execute-access?))
+ (chicken-5
+  (import (chicken base)
+          (chicken condition)
+          (chicken file)
+          (chicken io)
+          (chicken pathname)
+          (chicken port)
+          (chicken process)
+          (chicken process-context)
+          (chicken string))
+  (import srfi-1))
+ (else
+  (error "Unsupported CHICKEN version.")))
 
 (define program-available?
   (let ((paths (string-split (get-environment-variable "PATH") ":")))
@@ -30,7 +47,8 @@
             #f
             (let ((path (car paths)))
               (let ((program-path (make-pathname path program)))
-                (if (file-execute-access? program-path)
+                (if (and (file-exists? program-path)
+                         (file-executable? program-path))
                     program-path
                     (loop (cdr paths))))))))))
 
@@ -73,10 +91,13 @@
                  (if exited-normally?
                      (case status
                        ((0) #t)
-                       ((255) (error 'run-zenity dialog (read-all err)))
+                       ((255) (error 'run-zenity dialog
+                                     (with-input-from-port err read-string)))
                        (else #f))
                      (error 'run-zenity dialog "killed by" status))))
-              (let ((out (read-all in)))
+              (let ((out (with-input-from-port in read-string)))
+                (when (eof-object? out)
+                  (set! out ""))
                 (let-values (((_ exited-normally? status) (process-wait pid)))
                   (if exited-normally?
                       (case status
@@ -90,7 +111,8 @@
                                         (string-split (string-chomp out "\n")
                                                       separator)
                                         (string-chomp out "\n")))))
-                        ((255) (error 'run-zenity dialog (read-all err)))
+                        ((255) (error 'run-zenity dialog
+                                      (with-input-from-port err read-string)))
                         (else #f))
                       (error 'run-zenity dialog "killed by" status))))))))))
 

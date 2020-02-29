@@ -1,0 +1,10 @@
+;;; henity.egg -*- scheme -*-
+
+((synopsis "Bindings for the Zenity tool")
+ (author "Mario Domenech Goulart")
+ (license "BSD")
+ (category ui)
+ (dependencies srfi-1)
+ (component-options
+  (csc-options "-O3" "-d1"))
+ (components (extension henity)))

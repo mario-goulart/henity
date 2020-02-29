@@ -1,4 +1,7 @@
-(use henity)
+(cond-expand
+ (chicken-4 (use henity))
+ (chicken-5 (import henity))
+ (else (error "Unsupported CHICKEN version.")))
 
 (list-dialog '((title "Choose the Bugs You Wish to View")
                (column "Bug Number")

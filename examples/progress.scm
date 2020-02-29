@@ -1,4 +1,7 @@
-(use henity posix)
+(cond-expand
+ (chicken-4 (use henity posix))
+ (chicken-5 (import (chicken process signal) henity))
+ (else (error "Unsupported CHICKEN version.")))
 
 ;; Ignore sigpipe to avoid errors when canceling a progress bar
 (set-signal-handler! signal/pipe void)

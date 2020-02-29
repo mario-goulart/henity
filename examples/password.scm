@@ -1,4 +1,7 @@
-(use henity)
+(cond-expand
+ (chicken-4 (use henity))
+ (chicken-5 (import (chicken string) henity))
+ (else (error "Unsupported CHICKEN version.")))
 
 (let ((data (password-dialog '(password username))))
   (if data
